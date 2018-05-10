@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Encoder Bridge</title>
+    <link rel="stylesheet" href="./default.css">
+    <link rel="stylesheet" href="./main.css">
+    <link rel="stylesheet" href="./colors.css">
+</head>
+<body>
+
+<span id="version">can't read version...</span>
+
+<div class="dummy"></div>
+<div class="setting-page">
+    <div class="setting-icon">⚙</div>
+    <div class="setting-unit">
+        <h5>qaac.exe Location</h5>
+        <span id="qaac-dir"></span>
+        <button type="button" id="button-select-qaac" class="encorder-button-exe">Select File</button>
+        <h5>lame.exe Location</h5>
+        <span id="lame-dir"></span>
+        <button type="button" id="button-select-lame" class="encorder-button-exe">Select File</button>
+    </div>
+</div>
+
+<header class="header">
+    <h1>Encoder Bridge</h1>
+    <div id="input-area">
+        <span id="in-text">Drop Audio file here<br>or<br></span>
+        <button type="button" id="button-selectfile" class="header-button-io">Select Audio File</button>
+        <p id="selected-file"></p>
+    </div>
+    <div id="output-area">
+        <span>:Output directory:</span>
+        <div id="output-text"></div>
+        <button type="button" id="button-fileout" class="header-button-io">Change Output Dir</button>
+    </div>
+</header>
+
+<div class="content">
+<nav class="nav-encodetype">
+    <span class="nav-select" id="nav-aac">AAC</span>
+    <span class="nav-select" id="nav-mp3">MP3</span>
+</nav>
+<div id="aac-inside" class="content-inside">
+    <form id="aac-radio">
+        <div id="aac-quarity">
+            <input type="radio" name="aac-input" value="TrueVBR" checked>
+            <span>True VBR</span>
+            <input type="range" name="aac-TVBRslide" step="1" min="0" max="127" value="127">
+            <span id="aac_sliderValue">127</span>
+        </div>
+
+    </form>
+    <button type="button" id="aac-start" class="button-start">Start AAC Encode!</button>
+</div>
+<div id="mp3-inside" class="content-inside">
+    <form id="mp3-radio">
+        <div id="mp3-cbr">
+            <input type="radio" name="mp3-input" value="CBR" checked>
+            <span>CBR</span>
+            <input type="range" name="mp3-CBRslide" step="32" min="0" max="320" value="320">
+            <span id="mp3_sliderValue">320</span>
+        </div>
+    
+    </form>
+    <button type="button" id="mp3-start" class="button-start">Start MP3 Encode!</button>
+</div>
+<div id="info-line"></div>
+</div>
+</body>
+<script type="text/javascript">
+    require("./page-init");
+    require("./file-open");
+    require("./file-drop");
+    require("./content-aac");
+    require("./content-mp3");
+    require("./setting-page");
+</script>
+</html>

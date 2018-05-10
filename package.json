@@ -1,0 +1,18 @@
+{
+  "name": "EncoderBridge",
+  "version": "0.0.1",
+  "description": "Simple setting between encoder",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --debug"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "^2.0.0",
+    "electron-json-storage": "^4.1.0",
+    "electron-windows-notifications": "^2.0.1"
+  }
+}

@@ -1,0 +1,15 @@
+
+html {
+    font-family: Arial, Helvetica, sans-serifl;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    cursor: default;
+}
+
+body {
+    margin: 0;
+}
+
+img {
+    -webkit-user-drag: none;
+}
