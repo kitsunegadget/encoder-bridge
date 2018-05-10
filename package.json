@@ -1,7 +1,7 @@
 {
   "name": "EncoderBridge",
   "version": "0.0.1",
-  "description": "Simple setting between encoder",
+  "description": "simple settings UI for using audio encoder",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -9,10 +9,9 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "",
   "dependencies": {
     "electron": "^2.0.0",
-    "electron-json-storage": "^4.1.0",
-    "electron-windows-notifications": "^2.0.1"
+    "electron-json-storage": "^4.1.0"
   }
 }
