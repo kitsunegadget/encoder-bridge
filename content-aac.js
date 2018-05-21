@@ -1,16 +1,17 @@
-const { execFile } = require("child_process");
+const { execFile, spawn } = require("child_process");
+const { ipcRenderer } = require("electron");
 
-// load before status (might as well depulicate file?)
+// load before status (might as well move to page-init.js?)
 document.getElementById("nav-aac").style.color = "#fff";
 document.getElementById("nav-aac").style.backgroundColor = "#325088";
 document.getElementById("nav-aac").style.borderBottomWidth = "0px";
 
 // start encode function
 function AAC_startEncode() {
-    let executePath = document.getElementById("qaac-dir").innerHTML;
+    let executePath = ipcRenderer.sendSync("get-qaacPath");
     let parameter = [];
-    let inputPath = document.getElementById("selected-file").innerHTML;
-    let outPath = document.getElementById("output-text").innerHTML;
+    let inputPath = ipcRenderer.sendSync("get-inputPath");
+    let outPath = ipcRenderer.sendSync("get-outputPath");
 
     let n = document.getElementById("aac-radio");
     let radio = n["aac-input"];
@@ -19,10 +20,40 @@ function AAC_startEncode() {
     if(radio.value === "TrueVBR"){
         mode = 0;
     }
+
+    if(inputPath === "") {
+        document.getElementById("info-line").innerHTML = "Input File not Selected.";
+        return;
+    }
+
+    document.getElementById("info-line").innerHTML = "";
+
     // start encoding
+    document.getElementsByClassName("dummy")[0].style.zIndex = 10;
+    document.getElementsByClassName("dummy")[0].classList.toggle("dummy-toggle");
     if(mode == 0){
         let val = document.getElementsByName("aac-TVBRslide")[0].value;
         parameter = parameter.concat("-V"+val, inputPath, "-o", outPath+"\\_enc.m4a");
+
+        sp = spawn(executePath, parameter);
+        sp.stdout.on('data', (data) => {
+            //console.log("stdout: " + data.toString());
+            document.getElementById("info-line").innerHTML += data.toString() + '<br>';
+        });
+
+        sp.stderr.on('data', (data) => {
+            //console.log('stderr: ' + data.toString());
+            document.getElementById("info-line").innerHTML += data.toString() + '<br>';
+            document.getElementById("info-line").scrollTop = document.getElementById("info-line").scrollHeight;
+        });
+        
+        sp.on('exit', (code) => {
+            console.log('child process exited with code ' + code.toString());
+            document.getElementsByClassName("dummy")[0].style.zIndex = 1;
+            document.getElementsByClassName("dummy")[0].classList.toggle("dummy-toggle");
+            
+        });
+        /*
         execFile(executePath, parameter, (error, stdout, stderr)=>{
             if(error){
                 document.getElementById("info-line").innerHTML = error;
@@ -32,6 +63,7 @@ function AAC_startEncode() {
             console.log(stdout);
             document.getElementById("info-line").innerHTML = "";
         });
+        */
     };
 };
 

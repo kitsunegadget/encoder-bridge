@@ -4,10 +4,10 @@ const {ipcRenderer} = require('electron');
 const selectDirBtn = document.getElementById('button-selectfile');
 
 selectDirBtn.addEventListener("click", (event) => {
-    ipcRenderer.send("open-file-dialog");
+    ipcRenderer.send("open-inputfile-dialog");
 });
 
-ipcRenderer.on("opened-file", (event, path) => {
+ipcRenderer.on("opened-inputfile", (event, path) => {
     if (path) document.getElementById('selected-file').innerHTML = `${path}`;
 });
 
@@ -37,7 +37,7 @@ selectEncDirBtnQaac.onclick = () => {
 ipcRenderer.on("open-exe-qaac", (e, path) => {
     if (path) {
         document.getElementById("qaac-dir").innerHTML = `${path}`
-        ipcRenderer.send("save-qaacPath", path);
+        ipcRenderer.send("save-qaacPath");
     };
 });
 
@@ -48,6 +48,6 @@ selectEncDirBtnLame.onclick = () => {
 ipcRenderer.on("open-exe-lame", (e, path) => {
     if (path) {
         document.getElementById("lame-dir").innerHTML = `${path}`
-        ipcRenderer.send("save-lamePath", path);
+        ipcRenderer.send("save-lamePath");
     };
 });

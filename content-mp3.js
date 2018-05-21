@@ -1,11 +1,12 @@
-const { execFile } = require("child_process");
+const { execFile, spawn } = require("child_process");
+const { ipcRenderer } = require("electron");
 
 // start encode function
 function MP3_startEncode() {
-    let executePath = document.getElementById("lame-dir").innerHTML;
+    let executePath = ipcRenderer.sendSync("get-lamePath");
     let parameter = [];
-    let inputPath = document.getElementById("selected-file").innerHTML;
-    let outPath = document.getElementById("output-text").innerHTML;
+    let inputPath = ipcRenderer.sendSync("get-inputPath");
+    let outPath = ipcRenderer.sendSync("get-outputPath");
 
     let n = document.getElementById("mp3-radio");
     let radio = n["mp3-input"];
@@ -14,10 +15,39 @@ function MP3_startEncode() {
     if(radio.value === "CBR"){
         mode = 0;
     }
+
+    if(inputPath === "") {
+        document.getElementById("info-line").innerHTML = "Input File not Selected.";
+        return;
+    }
+
+    document.getElementById("info-line").innerHTML = "";
+
     // start encoding
+    document.getElementsByClassName("dummy")[0].style.zIndex = 10;
+    document.getElementsByClassName("dummy")[0].classList.toggle("dummy-toggle");
     if(mode == 0){
         let val = document.getElementsByName("mp3-CBRslide")[0].value;
         parameter = parameter.concat("-b", val, inputPath, outPath+"\\_enc.mp3");
+
+        sp = spawn(executePath, parameter);
+        sp.stdout.on('data', (data) => {
+            console.log("stdout: " + data.toString());
+            document.getElementById("info-line").innerHTML += data.toString() + '<br>';
+        });
+
+        sp.stderr.on('data', (data) => {
+            //console.log('stderr: ' + data.toString());
+            document.getElementById("info-line").innerHTML = data.toString();
+            document.getElementById("info-line").scrollTop = document.getElementById("info-line").scrollHeight;
+        });
+        
+        sp.on('exit', (code) => {
+            console.log('child process exited with code ' + code.toString());
+            document.getElementsByClassName("dummy")[0].style.zIndex = 1;
+            document.getElementsByClassName("dummy")[0].classList.toggle("dummy-toggle");
+        });
+        /*
         execFile(executePath, parameter, (error, stdout, stderr)=>{
             if(error){
                 document.getElementById("info-line").innerHTML = error;
@@ -27,6 +57,7 @@ function MP3_startEncode() {
             console.log(stdout);
             document.getElementById("info-line").innerHTML = "";
         });
+        */
     };
 };
 
