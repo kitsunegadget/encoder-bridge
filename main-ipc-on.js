@@ -3,7 +3,7 @@ const storage = require("electron-json-storage");
 
 let qaacPath = "";
 let lamePath = "";
-let inputPath = "";
+let inputPaths = "";
 let outputDir = __dirname;
 let outputName = "";
 
@@ -75,8 +75,10 @@ ipcMain.on("open-inputfile-dialog", (event) => {
         properties: ["openFile"]
     }
     dialog.showOpenDialog(options, (files) => {
-        inputPath = files;
-        event.sender.send("opened-inputfile", files)
+        if(files) {
+            inputPaths = files;
+            event.sender.send("opened-inputfile", files)
+        };
     });
 });
 
@@ -86,8 +88,10 @@ ipcMain.on("open-output-dir", (e) => {
         properties: ["openDirectory"]
     }
     dialog.showOpenDialog(options, (dir) => {
-        outputDir = dir;
-        e.sender.send("send-output-dir", dir);
+        if(dir) {
+            outputDir = dir;
+            e.sender.send("send-output-dir", dir);
+        };
     });
 });
 
@@ -102,9 +106,9 @@ ipcMain.on("get-lamePath", (e) => {
     e.returnValue = lamePath;
 });
 
-ipcMain.on("get-inputPath", (e) => {
+ipcMain.on("get-inputPaths", (e) => {
     //console.log(inputPath);
-    e.returnValue = inputPath;
+    e.returnValue = inputPaths;
 });
 
 ipcMain.on("get-outputPath", (e) => {

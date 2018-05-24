@@ -1,5 +1,6 @@
 const { execFile, spawn } = require("child_process");
 const { ipcRenderer } = require("electron");
+const fs = require("fs");
 
 // load before status (might as well move to page-init.js?)
 document.getElementById("nav-aac").style.color = "#fff";
@@ -10,7 +11,7 @@ document.getElementById("nav-aac").style.borderBottomWidth = "0px";
 function AAC_startEncode() {
     let executePath = ipcRenderer.sendSync("get-qaacPath");
     let parameter = [];
-    let inputPath = ipcRenderer.sendSync("get-inputPath");
+    let inputPaths = ipcRenderer.sendSync("get-inputPaths");
     let outPath = ipcRenderer.sendSync("get-outputPath");
 
     let n = document.getElementById("aac-radio");
@@ -21,7 +22,7 @@ function AAC_startEncode() {
         mode = 0;
     }
 
-    if(inputPath === "") {
+    if(inputPaths === "") {
         document.getElementById("info-line").innerHTML = "Input File not Selected.";
         return;
     }
@@ -31,9 +32,35 @@ function AAC_startEncode() {
     // start encoding
     document.getElementsByClassName("dummy")[0].style.zIndex = 10;
     document.getElementsByClassName("dummy")[0].classList.toggle("dummy-toggle");
+
+    // check file exist
+    let override = true;
+    f = inputPaths[0].split("\\");
+    fname = f[f.length-1];
+    let pathName = outPath + "\\" + fname;
+    try {
+        fs.accessSync(pathName + ".m4a");
+        pathexist = true;
+    } catch(err) {
+        pathexist = false;
+    }
+    if(pathexist) {
+        if(confirm(pathName + ".m4a is alredy exist. override?")){
+            override = true;
+        } else {
+            override = false;
+        };
+    };
+
+    if(!override) {
+        document.getElementsByClassName("dummy")[0].style.zIndex = 1;
+        document.getElementsByClassName("dummy")[0].classList.toggle("dummy-toggle");
+        return;
+    };
+
     if(mode == 0){
         let val = document.getElementsByName("aac-TVBRslide")[0].value;
-        parameter = parameter.concat("-V"+val, inputPath, "-o", outPath+"\\_enc.m4a");
+        parameter = parameter.concat("-V"+val, inputPaths[0], "-o", pathName+".m4a");
 
         sp = spawn(executePath, parameter);
         sp.stdout.on('data', (data) => {
@@ -51,7 +78,6 @@ function AAC_startEncode() {
             console.log('child process exited with code ' + code.toString());
             document.getElementsByClassName("dummy")[0].style.zIndex = 1;
             document.getElementsByClassName("dummy")[0].classList.toggle("dummy-toggle");
-            
         });
         /*
         execFile(executePath, parameter, (error, stdout, stderr)=>{

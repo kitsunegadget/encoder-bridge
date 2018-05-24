@@ -1,6 +1,6 @@
 {
   "name": "EncoderBridge",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "simple settings UI for using audio encoder",
   "main": "main.js",
   "scripts": {

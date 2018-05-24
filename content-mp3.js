@@ -1,11 +1,12 @@
 const { execFile, spawn } = require("child_process");
 const { ipcRenderer } = require("electron");
+const fs = require("fs");
 
 // start encode function
 function MP3_startEncode() {
     let executePath = ipcRenderer.sendSync("get-lamePath");
     let parameter = [];
-    let inputPath = ipcRenderer.sendSync("get-inputPath");
+    let inputPaths = ipcRenderer.sendSync("get-inputPaths");
     let outPath = ipcRenderer.sendSync("get-outputPath");
 
     let n = document.getElementById("mp3-radio");
@@ -16,7 +17,7 @@ function MP3_startEncode() {
         mode = 0;
     }
 
-    if(inputPath === "") {
+    if(inputPaths === "") {
         document.getElementById("info-line").innerHTML = "Input File not Selected.";
         return;
     }
@@ -26,9 +27,35 @@ function MP3_startEncode() {
     // start encoding
     document.getElementsByClassName("dummy")[0].style.zIndex = 10;
     document.getElementsByClassName("dummy")[0].classList.toggle("dummy-toggle");
+
+    // check file exist
+    let override = true;
+    f = inputPaths[0].split("\\");
+    fname = f[f.length-1];
+    let pathName = outPath + "\\" + fname;
+    try {
+        fs.accessSync(pathName + ".mp3");
+        pathexist = true;
+    } catch(err) {
+        pathexist = false;
+    }
+    if(pathexist) {
+        if(confirm(pathName + ".mp3 is alredy exist. override?")){
+            override = true;
+        } else {
+            override = false;
+        };
+    };
+
+    if(!override) {
+        document.getElementsByClassName("dummy")[0].style.zIndex = 1;
+        document.getElementsByClassName("dummy")[0].classList.toggle("dummy-toggle");
+        return;
+    };
+
     if(mode == 0){
         let val = document.getElementsByName("mp3-CBRslide")[0].value;
-        parameter = parameter.concat("-b", val, inputPath, outPath+"\\_enc.mp3");
+        parameter = parameter.concat("-b", val, inputPaths, pathName+".mp3");
 
         sp = spawn(executePath, parameter);
         sp.stdout.on('data', (data) => {

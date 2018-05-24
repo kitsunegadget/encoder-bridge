@@ -8,7 +8,7 @@ selectDirBtn.addEventListener("click", (event) => {
 });
 
 ipcRenderer.on("opened-inputfile", (event, path) => {
-    if (path) document.getElementById('selected-file').innerHTML = `${path}`;
+    document.getElementById('selected-file').innerHTML = `${path}`;
 });
 
 // default output dir
@@ -23,7 +23,7 @@ selectOutDirBtn.onclick = () => {
 };
 
 ipcRenderer.on("send-output-dir", (e, dir) => {
-    if (dir) outputDir.innerHTML = dir;
+    outputDir.innerHTML = dir;
 });
 
 // open encoder exe file
